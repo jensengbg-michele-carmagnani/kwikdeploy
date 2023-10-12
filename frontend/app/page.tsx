@@ -3,9 +3,10 @@ import React from "react";
 import ProjectCard from "./project-card";
 
 import Link from "next/link";
-import MainContainer from "./components/main-container";
+
 import { Button } from "./components/ui/button";
 import { Icons } from "./components/icons";
+import MainContainer from "./components/main-container";
 
 type Props = {};
 
