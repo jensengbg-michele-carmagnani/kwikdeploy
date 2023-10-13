@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 type CardAttribute = {
+  projectId: number;
   titleCard?: string;
   descriptionCard?: string;
   bodyCard?: string;
@@ -20,6 +21,7 @@ type CardProps = React.ComponentProps<typeof Card> & CardAttribute;
 
 const ProjectCard = ({
   className,
+  projectId,
   titleCard,
   descriptionCard,
   bodyCard,
@@ -27,10 +29,10 @@ const ProjectCard = ({
   ...props
 }: CardProps) => {
   return (
-    <Link href={`/${props.id}/targets`}>
+    <Link href={`/${projectId}/targets`}>
       <Card className={cn("w-[304px] ", className)} {...props}>
         <CardHeader>
-          <CardTitle>{titleCard} </CardTitle>
+          <CardTitle>{titleCard}</CardTitle>
           <CardDescription>{descriptionCard} </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">

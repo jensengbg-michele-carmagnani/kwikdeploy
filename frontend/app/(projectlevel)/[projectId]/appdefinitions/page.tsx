@@ -14,6 +14,13 @@ import MainContainer from "@/app/components/main-container";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
+const appDefinitions = [
+  { id: 1, name: 'App Frontend', image: 'app-frontend', tag: 'latest', variableCount: 3, mountCount: 0 },
+  { id: 2, name: 'App Backend', image: 'app-backend', tag: 'v1', variableCount: 2, mountCount: 2 },
+  { id: 3, name: 'MySQL', image: 'mysql', tag: '8.0', variableCount: 4, mountCount: 1 },
+  { id: 4, name: 'Redis Cache', image: 'redis', tag: 'latest', variableCount: 0, mountCount: 0 },
+]
+
 export default function AppDefinitionsPage() {
   return (
     <MainContainer props={{ className: "" }}>
@@ -24,47 +31,29 @@ export default function AppDefinitionsPage() {
           </Button>
         </Link>
       </div>
-      <div className="flex justify-evenly">
-        <Card className="w-[350px]">
-          <CardHeader>
-            <CardTitle>My Frontend</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex w-full justify-between ">
-              <div className="flex gap-1 ">
-                <span>Image:</span>
-                my-frontend
+      <div className="flex flex-wrap gap-4">
+        {appDefinitions.map((appDefinition) => (
+          <Card className="w-[350px]">
+            <CardHeader>
+              <CardTitle>{appDefinition.name}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex w-full justify-between ">
+                <div className="flex gap-1 ">
+                  <span>Image:</span>
+                  {appDefinition.image}
+                </div>
+                <div>
+                  <span>Tag: {appDefinition.tag}</span>
+                </div>
               </div>
-              <div>
-                <span>Tag: v1</span>
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button>Variables</Button>
-            <Button>Mount</Button>
-          </CardFooter>
-        </Card>
-        <Card className="w-[350px]">
-          <CardHeader>
-            <CardTitle>My Backend</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between w-full">
-              <div className="flex gap-1">
-                <span>Image:</span>
-                my-backend
-              </div>
-              <div>
-                <span>Tag: v1</span>
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button>Variables</Button>
-            <Button>Mount</Button>
-          </CardFooter>
-        </Card>
+            </CardContent>
+            <CardFooter className="flex justify-between">
+              <Button variant="ghost" className="text-sm font-bold">{appDefinition.variableCount} Variables</Button>
+              <Button variant="ghost" className="text-sm font-bold">{appDefinition.mountCount} Mounts</Button>
+            </CardFooter>
+          </Card>
+        ))}
       </div>
     </MainContainer>
   );

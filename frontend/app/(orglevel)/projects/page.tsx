@@ -1,6 +1,9 @@
+"use client"
+
 import { cn } from "@/lib/utils";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ProjectCard from "./project-card";
+import { ProjectHeadDto, ProjectsClient } from "@/lib/api/web-api-client";
 
 import Link from "next/link";
 import MainContainer from "../../components/main-container";
@@ -10,6 +13,16 @@ import { Icons } from "../../components/icons";
 type Props = {};
 
 const ProjectsPage = (props: Props) => {
+  const [projects, setProjects] = useState<ProjectHeadDto[]>([])
+
+  useEffect(() => {
+    (async () => {
+      const client = new ProjectsClient('/backendapi')
+      const response = await client.getList(1, 1000)
+      setProjects(response.items!)
+    })()
+  }, [])
+
   return (
     <MainContainer props={{ className: "" }}>
       <div className={cn("")}>
@@ -20,42 +33,16 @@ const ProjectsPage = (props: Props) => {
           </Button>
         </Link>
       </div>
-      <div className={cn("flex justify-center items-center flex-wrap gap-4")}>
-        <ProjectCard
-          id="123"
-          titleCard="Project Title"
-          descriptionCard="description"
-          bodyCard="Content"
-          footerCard=""
-        />
-        <ProjectCard
-          id="123"
-          titleCard="Project Title"
-          descriptionCard="description"
-          bodyCard="Content"
-          footerCard=""
-        />
-        <ProjectCard
-          id="123"
-          titleCard="Project Title"
-          descriptionCard="description"
-          bodyCard="Content"
-          footerCard=""
-        />
-        <ProjectCard
-          id="123"
-          titleCard="Project Title"
-          descriptionCard="description"
-          bodyCard="Content"
-          footerCard=""
-        />
-        <ProjectCard
-          id="123"
-          titleCard="Project Title"
-          descriptionCard="description"
-          bodyCard="Content"
-          footerCard=""
-        />
+      <div className={cn("flex flex-wrap gap-4")}>
+        {projects.map((project) => (
+          <ProjectCard
+            projectId={project.id!}
+            titleCard={project.name}
+            descriptionCard=""
+            bodyCard=""
+            footerCard=""
+          />
+        ))}
       </div>
     </MainContainer>
   );
