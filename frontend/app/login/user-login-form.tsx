@@ -8,6 +8,8 @@ import { useState } from "react";
 import { loginSchema } from "@/lib/validations/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { signIn } from "next-auth/react";
+
 import {
   Form,
   FormControl,
@@ -35,6 +37,13 @@ const UserLoginForm = ({ className, ...props }: UserLoginFormProps) => {
 
     // values after validation
     console.log(data);
+
+    const user = await signIn("credentials", {
+      email: data.email,
+      password: data.password,
+      redirect: false,
+    });
+    console.log(user);
 
     setTimeout(() => {
       setIsLoading(false);
