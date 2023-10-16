@@ -33,6 +33,7 @@ export async function middleware(request: NextRequest) {
     if (token) {
       requestHeaders.set("Authorization", `Bearer ${token.apiToken}`)
     }
+    console.log(requestHeaders)
 
     let url = request.nextUrl.clone()
     url.protocol = scheme

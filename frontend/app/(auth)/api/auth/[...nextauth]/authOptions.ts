@@ -1,3 +1,4 @@
+import { getToken } from "next-auth/jwt"
 import { SuccessfulLoginResponse } from "@/lib/api/web-api-client"
 import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
@@ -38,14 +39,14 @@ export const authOptions: NextAuthOptions = {
 
   pages: {},
 
-  session: {
-    strategy: "jwt",
-  },
-
   callbacks: {
     jwt: async ({ token, user }) => {
       token.apiToken = user.token
-      return token
+      return { ...token, ...user }
+    },
+    async session({ session, token, user }) {
+      session.user.token = token
+      return session
     },
   },
 }
