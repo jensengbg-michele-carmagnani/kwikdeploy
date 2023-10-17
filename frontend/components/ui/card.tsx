@@ -1,12 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-interface BasicCardChildren {
-  titleCard: string
-  descriptionCard: string
-  contentCard: string
-  footerCard: string
-}
+
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
