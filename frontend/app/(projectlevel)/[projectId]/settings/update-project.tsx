@@ -98,37 +98,37 @@ export default function CardWithForm({
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="grid gap-4 py-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <CardFooter>
-              <Button
-                className={cn("relative")}
-                type="submit"
-                disabled={isSaving}
-              >
-                {!isSaving ? (
-                  <span className="">Save</span>
-                ) : (
+            <fieldset disabled={isSaving} className="group">
+              <div className="grid gap-4 py-4 group-disabled:opacity-50">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <CardFooter>
+                <Button
+                  className={cn("relative")}
+                  type="submit"
+                  disabled={isSaving}
+                >
                   <Icons.spinner
-                    className="absolut mr-2 h-6 w-6 animate-spin   
-               text-slate-100 opacity-100 "
+                    className={cn(
+                      "absolute transform animate-spin text-slate-100 opacity-100 group-enabled:opacity-0 group-disabled:pointer-events-none "
+                    )}
                   />
-                )}
-              </Button>
-            </CardFooter>
+                  <span className="group-disabled:opacity-0">Save</span>
+                </Button>
+              </CardFooter>
+            </fieldset>
           </form>
         </Form>
       </CardContent>
