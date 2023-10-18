@@ -6,7 +6,7 @@ public class UserSetEmailCommandValidator : AbstractValidator<UserSetEmailComman
 {
     public UserSetEmailCommandValidator()
     {
-        RuleFor(v => v.Email).NotEmpty().EmailAddress();
+        RuleFor(v => v.Body.Email).NotEmpty().EmailAddress();
         RuleFor(v => v.Id).NotEmpty();
     }
 }

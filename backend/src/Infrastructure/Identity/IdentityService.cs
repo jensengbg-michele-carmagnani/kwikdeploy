@@ -1,5 +1,5 @@
-﻿using KwikDeploy.Application.Common.Interfaces;
-using KwikDeploy.Application.Common.Models;
+﻿using KwikDeploy.Application.Common.Exceptions;
+using KwikDeploy.Application.Common.Interfaces;
 using KwikDeploy.Domain.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -30,7 +30,7 @@ public class IdentityService : IIdentityService
         return user.UserName;
     }
 
-    public async Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password)
+    public async Task<string> CreateUserAsync(string userName, string password)
     {
         var user = new ApplicationUser
         {
@@ -40,7 +40,12 @@ public class IdentityService : IIdentityService
 
         var result = await _userManager.CreateAsync(user, password);
 
-        return (result.ToApplicationResult(), user.Id);
+        if (!result.Succeeded)
+        {
+            throw new IdentityException(result.Errors);
+        }
+
+        return user.Id;
     }
 
     public async Task<bool> IsInRoleAsync(string userId, string role)
@@ -54,7 +59,7 @@ public class IdentityService : IIdentityService
     {
         var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
 
-        if (user == null)
+        if (user is null)
         {
             return false;
         }
@@ -66,17 +71,23 @@ public class IdentityService : IIdentityService
         return result.Succeeded;
     }
 
-    public async Task<Result> DeleteUserAsync(string userId)
+    public async Task DeleteUserAsync(string userId)
     {
         var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
 
-        return user != null ? await DeleteUserAsync(user) : Result.Success();
+        if (user is not null)
+        {
+            await DeleteUserAsync(user);
+        }
     }
 
-    public async Task<Result> DeleteUserAsync(ApplicationUser user)
+    public async Task DeleteUserAsync(ApplicationUser user)
     {
         var result = await _userManager.DeleteAsync(user);
 
-        return result.ToApplicationResult();
+        if (!result.Succeeded)
+        {
+            throw new IdentityException(result.Errors);
+        }
     }
 }

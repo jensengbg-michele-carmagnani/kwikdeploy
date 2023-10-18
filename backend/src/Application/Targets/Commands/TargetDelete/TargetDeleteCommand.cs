@@ -2,11 +2,19 @@
 using KwikDeploy.Application.Common.Interfaces;
 using KwikDeploy.Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace KwikDeploy.Application.Targets.Commands.TargetDelete;
 
-public record TargetDeleteCommand(int Id) : IRequest;
+public record TargetDeleteCommand : IRequest
+{
+    [FromRoute]
+    public int ProjectId { get; init; }
+
+    [FromRoute]
+    public int Id { get; init; }
+}
 
 public class TargetDeleteCommandHandler : IRequestHandler<TargetDeleteCommand>
 {
@@ -21,9 +29,9 @@ public class TargetDeleteCommandHandler : IRequestHandler<TargetDeleteCommand>
     {
         // Existance Check
         var entity = await _context.Targets
-                        .Where(x => x.Id == request.Id)
+                        .Where(x => x.ProjectId == request.ProjectId && x.Id == request.Id)
                         .SingleOrDefaultAsync(cancellationToken);
-        if (entity == null)
+        if (entity is null)
         {
             throw new NotFoundException(nameof(Target), request.Id);
         }
@@ -32,5 +40,4 @@ public class TargetDeleteCommandHandler : IRequestHandler<TargetDeleteCommand>
         _context.Targets.Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
     }
-
 }

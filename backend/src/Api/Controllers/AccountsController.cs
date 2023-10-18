@@ -38,7 +38,7 @@ public class AccountsController : ApiControllerBase
     [HttpPost("login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<SuccessfulLoginResponse>> Login(UserLogin command)
+    public async Task<ActionResult<SuccessfulLoginResponse>> Login([FromBody] UserLogin command)
     {
         var user = await _userManager.FindByNameAsync(command.UserName);
 

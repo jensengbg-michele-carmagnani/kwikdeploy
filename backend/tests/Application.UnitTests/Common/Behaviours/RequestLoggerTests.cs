@@ -28,7 +28,7 @@ public class RequestLoggerTests
 
         var requestLogger = new LoggingBehaviour<TargetCreateCommand>(_logger.Object, _currentUserService.Object);
 
-        await requestLogger.Process(new TargetCreateCommand { Name = "abc" }, new CancellationToken());
+        await requestLogger.Process(new TargetCreateCommand { Body = new TargetCreateCommandBody { Name = "abc" } }, new CancellationToken());
 
         _identityService.Verify(i => i.GetUserNameAsync(It.IsAny<string>()), Times.Once);
     }
@@ -38,7 +38,7 @@ public class RequestLoggerTests
     {
         var requestLogger = new LoggingBehaviour<TargetCreateCommand>(_logger.Object, _currentUserService.Object);
 
-        await requestLogger.Process(new TargetCreateCommand { Name = "abc" }, new CancellationToken());
+        await requestLogger.Process(new TargetCreateCommand { Body = new TargetCreateCommandBody { Name = "abc" } }, new CancellationToken());
 
         _identityService.Verify(i => i.GetUserNameAsync(It.IsAny<string>()), Times.Never);
     }

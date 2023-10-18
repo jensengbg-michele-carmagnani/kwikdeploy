@@ -1,5 +1,4 @@
 ﻿using KwikDeploy.Domain.Identity;
-using KwikDeploy.Infrastructure.Identity;
 using KwikDeploy.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -96,7 +95,7 @@ public partial class Testing
             return _currentUserId;
         }
 
-        var errors = string.Join(Environment.NewLine, result.ToApplicationResult().Errors);
+        var errors = string.Join(Environment.NewLine, result.Errors.Select(x => x.Description));
 
         throw new Exception($"Unable to create {userName}.{Environment.NewLine}{errors}");
     }
@@ -107,7 +106,7 @@ public partial class Testing
         {
             await _checkpoint.ResetAsync(_configuration.GetConnectionString("DefaultConnection")!);
         }
-        catch (Exception) 
+        catch (Exception)
         {
         }
 

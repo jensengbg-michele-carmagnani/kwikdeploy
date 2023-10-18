@@ -2,7 +2,6 @@
 using KwikDeploy.Application.Common.Interfaces;
 using KwikDeploy.Domain.Entities;
 using KwikDeploy.Domain.Identity;
-using KwikDeploy.Infrastructure.Identity;
 using KwikDeploy.Infrastructure.Persistence.Interceptors;
 using MediatR;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;

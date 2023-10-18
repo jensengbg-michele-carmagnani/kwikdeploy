@@ -1,6 +1,4 @@
-﻿using KwikDeploy.Application.Common.Models;
-
-namespace KwikDeploy.Application.Common.Interfaces;
+﻿namespace KwikDeploy.Application.Common.Interfaces;
 
 public interface IIdentityService
 {
@@ -10,7 +8,7 @@ public interface IIdentityService
 
     Task<bool> AuthorizeAsync(string userId, string policyName);
 
-    Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password);
+    //Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password);
 
-    Task<Result> DeleteUserAsync(string userId);
+    //Task<Result> DeleteUserAsync(string userId);
 }

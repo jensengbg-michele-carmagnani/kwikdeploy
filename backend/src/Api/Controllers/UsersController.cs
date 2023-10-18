@@ -13,63 +13,63 @@ using Microsoft.Extensions.DependencyInjection.Users.Queries.UserGet;
 
 namespace Api.Controllers;
 
+[Route("Users")]
 public class UsersController : ApiControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<PaginatedList<UserHeadDto>>> GetList([FromQuery] UserGetListQuery query,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<PaginatedList<UserHeadDto>>> GetList(UserGetListQuery query, CancellationToken cancellationToken)
     {
         return await Mediator.Send(query, cancellationToken);
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<UserDto>> GetById([FromRoute] string id, CancellationToken cancellationToken)
+    [HttpGet("{Id}")]
+    public async Task<ActionResult<UserDto>> GetById(UserGetQuery query, CancellationToken cancellationToken)
     {
-        return await Mediator.Send(new UserGetQuery { Id = id }, cancellationToken);
+        return await Mediator.Send(query, cancellationToken);
     }
 
     [HttpGet("uniqueUserName")]
-    public async Task<ActionResult<bool>> IsUniqueUserName([FromQuery] UserUniqueUserNameQuery query,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<Result<bool>>> IsUniqueUserName(UserUniqueUserNameQuery query, CancellationToken cancellationToken)
     {
         return await Mediator.Send(query, cancellationToken);
     }
 
     [HttpGet("uniqueEmail")]
-    public async Task<ActionResult<bool>> IsUniqueEmail([FromQuery] UserUniqueEmailQuery query,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<Result<bool>>> IsUniqueEmail(UserUniqueEmailQuery query, CancellationToken cancellationToken)
     {
         return await Mediator.Send(query, cancellationToken);
     }
 
     [HttpPost]
-    public async Task<ActionResult<ResultWithId<string>>> Create(UserCreateCommand command,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<Result<string>>> Create(UserCreateCommand command, CancellationToken cancellationToken)
     {
         return await Mediator.Send(command, cancellationToken);
     }
 
-    [HttpDelete]
-    public async Task<ActionResult<Result>> Delete(UserDeleteCommand command, CancellationToken cancellationToken)
+    [HttpDelete("{Id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<ActionResult> Delete(UserDeleteCommand command, CancellationToken cancellationToken)
     {
-        return await Mediator.Send(command, cancellationToken);
+        await Mediator.Send(command, cancellationToken);
+
+        return NoContent();
     }
 
-    [HttpPut("{id}/email")]
-    public async Task<ActionResult<Result>> SetEmail(
-        [FromRoute] string id,
-        [FromBody] UserSetEmailDto data,
-        CancellationToken cancellationToken)
+    [HttpPut("{Id}/email")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<ActionResult> SetEmail(UserSetEmailCommand command, CancellationToken cancellationToken)
     {
-        return await Mediator.Send(new UserSetEmailCommand { Id = id, Email = data.Email }, cancellationToken);
+        await Mediator.Send(command, cancellationToken);
+
+        return NoContent();
     }
 
-    [HttpPut("{id}/userName")]
-    public async Task<ActionResult<Result>> SetUserName(
-        [FromRoute] string id,
-        [FromBody] UserSetUserNameDto data,
-        CancellationToken cancellationToken)
+    [HttpPut("{Id}/userName")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<ActionResult> SetUserName(UserSetUserNameCommand command, CancellationToken cancellationToken)
     {
-        return await Mediator.Send(new UserSetUserNameCommand { Id = id, UserName = data.UserName }, cancellationToken);
+        await Mediator.Send(command, cancellationToken);
+
+        return NoContent();
     }
 }

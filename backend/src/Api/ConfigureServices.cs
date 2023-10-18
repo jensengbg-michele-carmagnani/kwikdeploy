@@ -45,7 +45,10 @@ public static class ConfigureServices
 
         // Customise default API behaviour
         services.Configure<ApiBehaviorOptions>(options =>
-            options.SuppressModelStateInvalidFilter = true);
+        {
+            options.SuppressModelStateInvalidFilter = true;
+            options.SuppressInferBindingSourcesForParameters = true;
+        });
 
         services.AddOpenApiDocument((configure, serviceProvider) =>
         {

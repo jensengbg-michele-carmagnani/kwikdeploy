@@ -75,8 +75,8 @@
       "rxJsVersion": 7.0,
       "dateTimeType": "Date",
       "nullValue": "Undefined",
-      "generateClientClasses": true,
-      "generateClientInterfaces": true,
+      "generateClientClasses": false,
+      "generateClientInterfaces": false,
       "generateOptionalParameters": false,
       "exportTypes": true,
       "wrapDtoExceptions": false,
@@ -120,7 +120,7 @@
       "enumNameGeneratorType": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "Client/web-api-client.ts",
+      "output": "Client/web-api-models.ts",
       "newLineBehavior": "Auto"
     }
   }

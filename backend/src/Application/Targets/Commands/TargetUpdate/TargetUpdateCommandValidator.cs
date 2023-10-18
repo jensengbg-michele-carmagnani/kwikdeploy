@@ -6,7 +6,7 @@ public class TargetUpdateCommandValidator : AbstractValidator<TargetUpdateComman
 {
     public TargetUpdateCommandValidator()
     {
-        RuleFor(v => v.Name)
+        RuleFor(v => v.Body.Name)
             .MaximumLength(30)
             .NotEmpty();
     }

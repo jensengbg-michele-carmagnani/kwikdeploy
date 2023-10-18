@@ -3,12 +3,16 @@ using KwikDeploy.Application.Common.Models;
 using KwikDeploy.Domain.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace KwikDeploy.Application.Users.Queries.UserGetList;
 
 public class UserGetListQuery : IRequest<PaginatedList<UserHeadDto>>
 {
+    [FromQuery]
     public int PageNumber { get; init; } = 1;
+
+    [FromQuery]
     public int PageSize { get; init; } = 10;
 }
 
@@ -24,10 +28,13 @@ public class UserGetListQueryHandler : IRequestHandler<UserGetListQuery, Paginat
 
     public async Task<PaginatedList<UserHeadDto>> Handle(UserGetListQuery request, CancellationToken cancellationToken)
     {
-        return await _userManager.Users.OrderBy(x => x.UserName)
+        var paginatedList = await _userManager.Users.OrderBy(x => x.UserName)
             .Select(x => new UserHeadDto
             {
-                Id = x.Id, UserName = x.UserName
+                Id = x.Id,
+                UserName = x.UserName
             }).PaginatedListAsync(request.PageNumber, request.PageSize);
+
+        return paginatedList;
     }
 }

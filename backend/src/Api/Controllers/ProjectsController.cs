@@ -1,4 +1,5 @@
-﻿using KwikDeploy.Application.Common.Models;
+﻿using System.Threading;
+using KwikDeploy.Application.Common.Models;
 using KwikDeploy.Application.Projects.Commands.ProjectCreate;
 using KwikDeploy.Application.Projects.Commands.ProjectDelete;
 using KwikDeploy.Application.Projects.Commands.ProjectUpdate;
@@ -9,61 +10,50 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KwikDeploy.Api.Controllers;
 
+[Route("Projects")]
 public class ProjectsController : ApiControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<PaginatedList<ProjectHeadDto>>> GetList([FromQuery] ProjectGetListQuery query)
+    public async Task<ActionResult<PaginatedList<ProjectHeadDto>>> GetList(ProjectGetListQuery query, CancellationToken cancellationToken)
     {
-        return await Mediator.Send(query);
+        return await Mediator.Send(query, cancellationToken);
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ProjectDto>> GetById(int id)
+    [HttpGet("{Id}")]
+    public async Task<ActionResult<ProjectDto>> GetById(ProjectGetQuery query, CancellationToken cancellationToken)
     {
-        return await Mediator.Send(new ProjectGetQuery { Id = id });
+        return await Mediator.Send(query, cancellationToken);
     }
 
-    [HttpGet("uniquename/{name}")]
-    public async Task<ActionResult<bool>> IsUniqueName(string name)
+    [HttpGet("uniquename")]
+    public async Task<ActionResult<Result<bool>>> IsUniqueName(ProjectUniqueNameQuery query, CancellationToken cancellationToken)
     {
-        return await Mediator.Send(new ProjectUniqueNameQuery { Name = name, ProjectId = null });
-    }
-
-
-    [HttpGet("uniquename/{name}/{projectId}")]
-    public async Task<ActionResult<bool>> IsUniqueNameExludingItself(string name, int projectId)
-    {
-        return await Mediator.Send(new ProjectUniqueNameQuery { Name = name, ProjectId = projectId  });
+        return await Mediator.Send(query, cancellationToken);
     }
 
     [HttpPost]
-    public async Task<ActionResult<int>> Create(ProjectCreateCommand command)
+    public async Task<ActionResult<Result<int>>> Create(ProjectCreateCommand command, CancellationToken cancellationToken)
     {
-        return await Mediator.Send(command);
+        return await Mediator.Send(command, cancellationToken);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{Id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesDefaultResponseType]
-    public async Task<IActionResult> Update(int id, ProjectUpdateCommand command)
+    public async Task<ActionResult> Update(ProjectUpdateCommand command, CancellationToken cancellationToken)
     {
-        if (id != command.Id)
-        {
-            return BadRequest("id in URL and body should match.");
-        }
-
-        await Mediator.Send(command);
+        await Mediator.Send(command, cancellationToken);
 
         return NoContent();
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{Id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesDefaultResponseType]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<ActionResult> Delete(ProjectDeleteCommand command, CancellationToken cancellationToken)
     {
-        await Mediator.Send(new ProjectDeleteCommand(id));
+        await Mediator.Send(command, cancellationToken);
 
         return NoContent();
     }

@@ -1,21 +1,29 @@
 using FluentValidation.Results;
 using KwikDeploy.Application.Common.Exceptions;
-using KwikDeploy.Application.Common.Models;
 using KwikDeploy.Application.Users.Commands.UserSetEmail;
 using KwikDeploy.Domain.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace KwikDeploy.Application.Users.Commands.UserSetName;
 
-public class UserSetUserNameCommand:IRequest<Result>
+public record UserSetUserNameCommand : IRequest
 {
-    public string Id { get; set; } = default!;
-    public string UserName { get; set; } = default!;
+    [FromRoute]
+    public string Id { get; init; } = default!;
+
+    [FromBody]
+    public UserSetUserNameCommandBody Body { get; init; } = null!;
 }
 
-public class UserSetUserNameCommandHandler : IRequestHandler<UserSetUserNameCommand, Result>
+public record UserSetUserNameCommandBody
+{
+    public string UserName { get; init; } = default!;
+}
+
+public class UserSetUserNameCommandHandler : IRequestHandler<UserSetUserNameCommand>
 {
     private readonly UserManager<ApplicationUser> _userManager;
 
@@ -23,7 +31,8 @@ public class UserSetUserNameCommandHandler : IRequestHandler<UserSetUserNameComm
     {
         _userManager = userManager;
     }
-    public async Task<Result> Handle(UserSetUserNameCommand request, CancellationToken cancellationToken)
+
+    public async Task Handle(UserSetUserNameCommand request, CancellationToken cancellationToken)
     {
         ApplicationUser? user = await _userManager.FindByIdAsync(request.Id);
         if (user is null)
@@ -31,12 +40,12 @@ public class UserSetUserNameCommandHandler : IRequestHandler<UserSetUserNameComm
             throw new NotFoundException(nameof(UserSetEmailCommand.Id), request.Id);
         }
 
-        var normalizedUserName = _userManager.NormalizeName(request.UserName);
+        var normalizedUserName = _userManager.NormalizeName(request.Body.UserName);
         if (user.NormalizedUserName!.Equals(normalizedUserName))
         {
             throw new ValidationException(new List<ValidationFailure>
             {
-                new(nameof(request.UserName), "The new user name must be different from the current one.")
+                new(nameof(request.Body.UserName), "The new user name must be different from the current one.")
             });
         }
 
@@ -45,16 +54,15 @@ public class UserSetUserNameCommandHandler : IRequestHandler<UserSetUserNameComm
         {
             throw new ValidationException(new List<ValidationFailure>
             {
-                new(nameof(request.UserName), "Another user with the same user name already exists.")
+                new(nameof(request.Body.UserName), "Another user with the same user name already exists.")
             });
         }
 
-        var result = await _userManager.SetUserNameAsync(user, request.UserName);
+        var result = await _userManager.SetUserNameAsync(user, request.Body.UserName);
         if (!result.Succeeded)
         {
-            return Result.Failure(result.Errors.Select(x => $"{x.Code}: ${x.Description}"));
+            var validationErrors = result.Errors.Select(x => new ValidationFailure("", $"{x.Code}: ${x.Description}"));
+            throw new ValidationException(new List<ValidationFailure>(validationErrors));
         }
-
-        return Result.Success();
     }
 }

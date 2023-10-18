@@ -1,12 +1,15 @@
 ﻿using KwikDeploy.Application.Common.Exceptions;
 using KwikDeploy.Application.Common.Interfaces;
+using KwikDeploy.Application.Common.Models;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace KwikDeploy.Application.Projects.Queries.ProjectGet;
 
 public record ProjectGetQuery : IRequest<ProjectDto>
 {
+    [FromRoute]
     public int Id { get; init; }
 }
 
@@ -28,7 +31,7 @@ public class ProjectGetHandler : IRequestHandler<ProjectGetQuery, ProjectDto>
                                         Name = x.Name,
                                     }).SingleOrDefaultAsync();
 
-        if (projectDto == null)
+        if (projectDto is null)
         {
             throw new NotFoundException(nameof(ProjectDto), request.Id);
         }
