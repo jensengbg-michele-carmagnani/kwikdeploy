@@ -116,13 +116,13 @@ export default function CardWithForm({
               </div>
               <CardFooter>
                 <Button
-                  className={cn("relative")}
+                  className={cn("relative group-disabled:pointer-events-none")}
                   type="submit"
                   disabled={isSaving}
                 >
                   <Icons.spinner
                     className={cn(
-                      "absolute transform animate-spin text-slate-100 opacity-100 group-enabled:opacity-0 group-disabled:pointer-events-none "
+                      "absolute animate-spin text-slate-100 group-enabled:opacity-0 "
                     )}
                   />
                   <span className="group-disabled:opacity-0">Save</span>

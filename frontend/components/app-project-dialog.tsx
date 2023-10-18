@@ -25,6 +25,7 @@ import { SubmitHandler, useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useToast } from "./ui/use-toast"
+import { cn } from "@/lib/utils"
 
 type Props = {}
 
@@ -97,32 +98,40 @@ const AddProjectDialog = (props: Props) => {
       <DialogContent className="sm:max-w-[425px]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <DialogHeader>
-              <DialogTitle>Add Project</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Project Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <DialogFooter>
-              <Button type="submit" disabled={isSaving}>
-                {isSaving && (
-                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                Save
-              </Button>
-            </DialogFooter>
+            <fieldset className={cn("group")}>
+              <DialogHeader>
+                <DialogTitle>Add Project</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4 group-disabled:opacity-50">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Project Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <DialogFooter>
+                <Button
+                  className={cn("relative group-disabled:pointer-events-none")}
+                  type="submit"
+                  disabled={isSaving}
+                >
+                  <Icons.spinner
+                    className={cn(
+                      "absolute animate-spin text-slate-100 group-enabled:opacity-0  "
+                    )}
+                  />
+                  <span className={cn("group-disabled:opacity-0")}>Save</span>
+                </Button>
+              </DialogFooter>
+            </fieldset>
           </form>
         </Form>
       </DialogContent>
