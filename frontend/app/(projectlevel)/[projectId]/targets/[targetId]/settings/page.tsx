@@ -1,14 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import React, { useEffect, useMemo, useState } from "react"
 import {
   Form,
   FormControl,
@@ -26,15 +18,23 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useToast } from "@/components/ui/use-toast"
 import { cn } from "@/lib/utils"
 import useTargets from "@/hooks/useTargets"
+import useTarget from "@/hooks/useTarget"
 import { useParams } from "next/navigation"
+import { Separator } from "@/components/ui/separator"
+import DeleteTargetDialog from "../../dialogs/delete-target-dialog"
 
-export default function AddTargetDialog() {
-  const { projectId }: { projectId: string } = useParams()
+export default function TargetSettings() {
+  const { projectId, targetId }: { projectId: string; targetId: string } =
+    useParams()
 
-  const [open, setOpen] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
+  const { target } = useTarget(projectId, targetId)
   const { mutateTargets } = useTargets(projectId)
+  const [isSaving, setIsSaving] = useState(false)
   const { toast } = useToast()
+
+  useEffect(() => {
+    form.reset(target)
+  }, [target])
 
   const trimString = (u: unknown) => (typeof u === "string" ? u.trim() : u)
 
@@ -43,11 +43,11 @@ export default function AddTargetDialog() {
       trimString,
       z
         .string()
-        .min(1, "Target Name is required")
+        .min(1, "Name is required")
         .max(20)
         .refine(async (value) => {
           const res = await fetch(
-            `/backendapi/targets/${projectId}/uniquename?name=${value}&targetId=0`
+            `/backendapi/targets/${projectId}/uniquename?name=${value}&targetId=${targetId}`
           )
           return (await res.json()).value
         }, "Another target with this name already exists")
@@ -58,60 +58,50 @@ export default function AddTargetDialog() {
 
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-    },
+    defaultValues: useMemo(() => target, [target]),
   })
 
   const onSubmit: SubmitHandler<FormSchemaType> = async (data) => {
     setIsSaving(true)
-    const response = await fetch(`/backendapi/targets/${projectId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    })
+    const response = await fetch(
+      `/backendapi/targets/${projectId}/${targetId}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      }
+    )
     if (!response.ok) {
-      setOpen(false)
-      form.reset()
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: "There was a problem when saving new target. Try again!",
+        description: "There was a problem when saving the target. Try again!",
       })
     } else {
       mutateTargets()
-      setOpen(false)
-      form.reset()
       toast({
         title: "Success!",
-        description: "New target has been added.",
+        description: "Target has been saved.",
       })
     }
     setIsSaving(false)
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <Icons.plus className="mr-2 h-4 w-4" />
-          Add Target
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+    <>
+      <div className="space-y-6">
+        <h3 className="text-lg font-medium">Target Details</h3>
+        <Separator />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <fieldset className={cn("group")}>
-              <DialogHeader>
-                <DialogTitle>Add Target</DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-4 py-4 group-disabled:opacity-50">
+              <div className="grid gap-4 pb-4 group-disabled:opacity-50">
                 <FormField
                   control={form.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Target Name</FormLabel>
+                      <FormLabel>Name</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -120,7 +110,7 @@ export default function AddTargetDialog() {
                   )}
                 />
               </div>
-              <DialogFooter>
+              <div>
                 <Button
                   className={cn("relative group-disabled:pointer-events-none")}
                   type="submit"
@@ -133,11 +123,16 @@ export default function AddTargetDialog() {
                   />
                   <span className={cn("group-disabled:opacity-0")}>Save</span>
                 </Button>
-              </DialogFooter>
+              </div>
             </fieldset>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </div>
+      <div className="mt-12 space-y-6">
+        <h3 className="text-lg font-medium text-rose-500">Danger Zone</h3>
+        <Separator />
+        <DeleteTargetDialog />
+      </div>
+    </>
   )
 }

@@ -1,3 +1,5 @@
+"use client"
+
 import NavProjectLevel from "@/components/nav/NavProjectLevel"
 
 export default function ProjectLevelLayout({
