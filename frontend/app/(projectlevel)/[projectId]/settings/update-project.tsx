@@ -26,6 +26,7 @@ import {
 
 import useProjects from "@/hooks/useProjects"
 import { cn } from "@/lib/utils"
+import AlertComponet from "./alert-component"
 
 type CardAttributes = {
   projectId: number
@@ -44,6 +45,7 @@ export default function CardWithForm({
   const [isSaving, setIsSaving] = React.useState(false)
 
   const trimString = (u: unknown) => (typeof u === "string" ? u.trim() : u)
+
   const formSchema = z.object({
     name: z.preprocess(
       trimString,
@@ -68,9 +70,9 @@ export default function CardWithForm({
       name,
     },
   })
+
   const onSubmit: SubmitHandler<FormSchemaType> = async (data) => {
     setIsSaving(true)
-    console.log(data)
     const response = await fetch(`/backendapi/projects/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -94,47 +96,52 @@ export default function CardWithForm({
   }
 
   return (
-    <Card className={cn("w-full", className)} {...props}>
-      <CardHeader>
-        <CardTitle>Make changes to your project</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <fieldset disabled={isSaving} className="group">
-              <div className="grid gap-4 py-4 group-disabled:opacity-50">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <CardFooter>
-                <Button
-                  className={cn("relative group-disabled:pointer-events-none")}
-                  type="submit"
-                  disabled={isSaving}
-                >
-                  <Icons.spinner
-                    className={cn(
-                      "absolute animate-spin text-slate-100 group-enabled:opacity-0 "
+    <>
+      <Card className={cn("w-full", className)} {...props}>
+        <CardHeader>
+          <CardTitle>Make changes to your project</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <fieldset disabled={isSaving} className="group">
+                <div className="grid gap-4 py-4 group-disabled:opacity-50">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
                     )}
                   />
-                  <span className="group-disabled:opacity-0">Save</span>
-                </Button>
-              </CardFooter>
-            </fieldset>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+                </div>
+                <div className={cn("flex w-full justify-between")}>
+                  <Button
+                    className={cn(
+                      "relative group-disabled:pointer-events-none"
+                    )}
+                    type="submit"
+                    disabled={isSaving}
+                  >
+                    <Icons.spinner
+                      className={cn(
+                        "absolute animate-spin text-slate-100 group-enabled:opacity-0 "
+                      )}
+                    />
+                    <span className="group-disabled:opacity-0">Save</span>
+                  </Button>
+                  <AlertComponet id={id} projectName={name} />
+                </div>
+              </fieldset>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </>
   )
 }

@@ -13,13 +13,13 @@ export default function ProjectSettingsPage() {
   const { projectId } = useParams<ProjectParams>()
   const { isLoading, projects, isError } = useProjects()
 
-  if (isError) {
-    return <p>Something whent wrong try again!</p>
-  }
-
   const project = projects?.items?.find(
     (item) => item.id === parseInt(projectId) || { id: -1 }
   )
+  
+  if (isError) {
+    return <p>Something whent wrong try again!</p>
+  }
 
   if (project?.id === undefined) return null
 
