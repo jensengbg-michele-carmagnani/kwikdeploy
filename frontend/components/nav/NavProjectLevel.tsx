@@ -22,11 +22,11 @@ export default function NavProjectLevel({
   const currentRoute = usePathname()
 
   return (
-    <div className="border-b">
+    <div className="border-b bg-indigo-600 text-gray-200">
       <div className="flex h-16 items-center px-4">
         <nav className={cn("flex items-center space-x-4 lg:space-x-6")}>
           <Link
-            className="text-sm font-medium transition-colors hover:text-primary"
+            className="text-sm font-medium transition-colors"
             href={`/projects`}
           >
             &lt;- Back
@@ -36,8 +36,8 @@ export default function NavProjectLevel({
               key={i}
               className={
                 currentRoute.includes(navItem.href)
-                  ? "text-sm font-bold transition-colors hover:text-primary"
-                  : "text-sm font-medium transition-colors hover:text-primary"
+                  ? "rounded-md bg-indigo-700 px-3 py-2 text-sm font-medium text-white"
+                  : "rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-indigo-500 hover:bg-opacity-75"
               }
               href={`/${params.projectId}${navItem.href}`}
             >
